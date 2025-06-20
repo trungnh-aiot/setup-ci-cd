@@ -1,4 +1,4 @@
-{ 
+{
   "extends": [
     "next/core-web-vitals",
     "next/typescript",
@@ -6,5 +6,8 @@
     "plugin:jest-dom/recommended",
     "plugin:testing-library/react"
   ],
-  "plugins": ["jest", "testing-library", "jest-dom"]
+  "plugins": ["jest", "testing-library", "jest-dom"],
+  "rules": {
+    "@next/next/no-html-link-for-pages": "off"
+  }
 }
