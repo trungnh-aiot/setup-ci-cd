@@ -1,7 +1,9 @@
 import { FlatCompat } from "@eslint/eslintrc";
+import eslint from "@eslint/js";
 import prettier from "eslint-plugin-prettier";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import { dirname } from "path";
+import tseslint from "typescript-eslint";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -16,6 +18,32 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  {
+    ignores: [
+      "node_modules/**/*",
+      ".next/**/*",
+      "dist/**/*",
+      "build/**/*",
+      "coverage/**/*",
+      "*.log",
+      "*.d.ts",
+    ],
+  },
+  // ✅ Base configs: recommended & recommendedTypeChecked
+  ...tseslint.config(
+    eslint.configs.recommended,
+    tseslint.configs.recommendedTypeChecked,
+    {
+      languageOptions: {
+        parserOptions: {
+          project: true,
+          tsconfigRootDir: __dirname,
+        },
+      },
+    },
+  ),
+
+  // ✅ Compat config for Next.js, Prettier, import sort, etc.
   ...compat.config({
     extends: ["next/core-web-vitals", "next/typescript", "prettier"],
     plugins: ["prettier", "simple-import-sort"],
@@ -33,13 +61,13 @@ const eslintConfig = [
       "arrow-body-style": ["error", "as-needed"],
       "prefer-template": "error",
       "no-console": "warn",
-      camelcase: ["error", { ignoreDestructuring: true, properties: "never" }],
+      camelcase: ["warn", { ignoreDestructuring: true, properties: "never" }],
       "no-underscore-dangle": "warn",
 
       "import/newline-after-import": "warn",
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
-      // typescript specific rules
+
       "@typescript-eslint/no-unused-vars": "error",
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/await-thenable": "error",
@@ -50,14 +78,14 @@ const eslintConfig = [
       },
     },
   }),
- { 
+  // ✅ Ensure type-aware linting for TS files
+  {
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
+      parser: tseslint.parser,
       parserOptions: {
-        project: "./tsconfig.json",
+        project: true,
         tsconfigRootDir: __dirname,
-        ecmaVersion: "latest",
-        sourceType: "module",
       },
     },
   },
