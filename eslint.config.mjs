@@ -39,6 +39,10 @@ const eslintConfig = [
       "import/newline-after-import": "warn",
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
+      // typescript specific rules
+      "@typescript-eslint/no-unused-vars": "error",
+      "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/await-thenable": "error",
     },
     settings: {
       next: {
@@ -46,6 +50,17 @@ const eslintConfig = [
       },
     },
   }),
+ { 
+    files: ["**/*.ts", "**/*.tsx"],
+    languageOptions: {
+      parserOptions: {
+        project: "./tsconfig.json",
+        tsconfigRootDir: __dirname,
+        ecmaVersion: "latest",
+        sourceType: "module",
+      },
+    },
+  },
 ];
 
 export default eslintConfig;
