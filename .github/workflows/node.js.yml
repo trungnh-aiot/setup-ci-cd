@@ -1,0 +1,41 @@
+name: CI – Node.js Checks
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: 🔍 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Setup Node.js ${{ matrix.node-version }} with npm caching
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Lint code
+        run: npm run lint
+
+      - name: 📝 Check Prettier formatting
+        run: npm run prettier
+
+      - name: 📐 Type check (TypeScript)
+        run: npx tsc --noEmit
+
+      - name: 🏗️ Build project
+        run: npm run build
